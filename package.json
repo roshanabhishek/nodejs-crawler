@@ -20,9 +20,11 @@
   },
   "homepage": "https://github.com/roshanabhishek/nodejs-crawler#readme",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.679.0",
     "@mendable/firecrawl-js": "^1.7.1",
     "dotenv": "^16.4.5",
-    "express": "^4.21.1"
+    "express": "^4.21.1",
+    "redis": "^4.7.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.7"
