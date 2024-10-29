@@ -1,5 +1,7 @@
 import { Router } from "express";
 import { getGoogleApiSearchResult } from "../google-apis/google.js";
+import { checkForAsyncBatchScrapingStatus, startAsyncBatchScrape } from "../fire-crawl/firecrawl.js";
+
 const ScrapeRouter = Router();
 
 const getSearchWithKeyWords = (searchText) => {
@@ -18,10 +20,25 @@ ScrapeRouter.post("/", async function (req, res) {
         const searchResponse = await getGoogleApiSearchResult(searchTextWithKeyWords);
         const topSearchUrls = searchResponse.items.map(item => item.link);
 
-        res.json({ message: 'Scrape started successfully', data: topSearchUrls });
+        const batchScrapingPostStartedResponse = await startAsyncBatchScrape(topSearchUrls)
+        res.json({ message: 'Scrape started successfully', data: batchScrapingPostStartedResponse });
       } catch (error) {
         res.status(400).json({ error: error.message });
       }
+});
+
+ScrapeRouter.get("/status", async function (req, res) {
+  try {
+      const { batch_id } = req.body;
+      if (!batch_id) {
+        throw new Error('Batch ID is required');
+      }
+
+      const statusCheck = await checkForAsyncBatchScrapingStatus(batch_id)
+      res.json({ message: 'Scrape status', data: statusCheck });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
 });
 
 export default ScrapeRouter;
